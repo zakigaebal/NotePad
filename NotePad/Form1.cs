@@ -73,6 +73,7 @@ namespace NotePad
 
         private void buttonSearch_Click(object sender, EventArgs e)
         {
+            try { 
             string Connect = "datasource=127.0.0.1;port=3306;username=root;password=ekdnsel;Charset=utf8";
             string Query = "select * from dawoon.dc_notemanage;";
             string searchtext = textBoxSearch.Text.Trim();
@@ -102,6 +103,39 @@ namespace NotePad
             dataGridView1.Columns[dataGridView1.Columns.Count - 3].Visible = false;
             dataGridView1.Columns[dataGridView1.Columns.Count - 2].Visible = false;
             dataGridView1.Columns[dataGridView1.Columns.Count - 1].Visible = false;
+            }
+            catch (Exception ex)
+            {
+                string Connect = "datasource=127.0.0.1;port=3306;username=root;password=ekdnsel;Charset=utf8";
+                string Query = "select * from dawoon.dc_notemanage;";
+                MessageBox.Show(ex.Message.ToString(),"SQL 생성 코드가 없습니다.");
+                if (ex.Message.ToString() == "")
+                {
+                    Query = "CREATE TABLE IF NOT EXISTS `dc_notemanage` ("+
+  "`noteSeq` varchar(20) NOT NULL COMMENT " + "'번호'," +
+  "`userNm` varchar(10) DEFAULT '' COMMENT '이름'," +
+  "`memo` varchar(4000) DEFAULT '' COMMENT 'Memo'," +
+  "`flagYN` varchar(1) DEFAULT 'Y' COMMENT '가용여부(Y:유효/N:삭제)',"+
+  "`regDate` datetime DEFAULT NULL COMMENT '최초저장일',"+
+  "`issueDate` datetime DEFAULT NULL COMMENT '최종저장일',"+
+  "`issueID` varchar(20) DEFAULT '' COMMENT '최종저장자 ID'"+
+") ENGINE = InnoDB DEFAULT CHARSET = utf8 COMMENT = '사용자 관리'; ";
+                }
+                MySqlConnection con = new MySqlConnection(Connect);
+                MySqlCommand Comm = new MySqlCommand(Query, con);
+                MySqlDataAdapter MyAdapter = new MySqlDataAdapter();
+                MyAdapter.SelectCommand = Comm;
+                DataTable dTable = new DataTable();
+                MyAdapter.Fill(dTable);
+                dataGridView1.DataSource = dTable;
+                dataGridView1.Columns[0].Visible = false;
+                dataGridView1.Columns[dataGridView1.Columns.Count - 4].Visible = false;
+                dataGridView1.Columns[dataGridView1.Columns.Count - 3].Visible = false;
+                dataGridView1.Columns[dataGridView1.Columns.Count - 2].Visible = false;
+                dataGridView1.Columns[dataGridView1.Columns.Count - 1].Visible = false;
+
+            }
+            
         }
         private void clear()
         {
